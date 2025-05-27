@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, TouchableWithoutFeedback, Alert } from 'react-native';
+import {
+  View, Text, TextInput, TouchableOpacity,
+  StyleSheet, Image, TouchableWithoutFeedback, Alert
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function LoginScreen() {
@@ -21,31 +24,84 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.banner}>
-        <Image source={require('../../assets/images/wildlens-logo-paw-white.png')} style={styles.logo} />
-        <Text style={styles.slogan}>Les connaître, c’est les aimer</Text>
-        <Text style={styles.loginText}>Entrez vos identifiants</Text>
-        <TextInput style={styles.input} placeholder="Nom d'utilisateur" value={username} onChangeText={setUsername} autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder="Mot de passe" value={password} onChangeText={setPassword} secureTextEntry />
-        <TouchableWithoutFeedback onPress={handleRegisterPress}>
-          <Text style={styles.firstLogin}>C’est votre première connexion ?</Text>
-        </TouchableWithoutFeedback>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Se connecter</Text>
-        </TouchableOpacity>
-      </View>
+      <Image source={require('../../assets/images/logo_vert.png')} style={styles.logo} />
+      <Text style={styles.loginText}>Entrez vos identifiants</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Nom d'utilisateur"
+        placeholderTextColor="#666"
+        value={username}
+        onChangeText={setUsername}
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Mot de passe"
+        placeholderTextColor="#666"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      <TouchableWithoutFeedback onPress={handleRegisterPress}>
+        <Text style={styles.firstLogin}>C’est votre première connexion ?</Text>
+      </TouchableWithoutFeedback>
+
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Se connecter</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  banner: { flex: 1, backgroundColor: '#4DB6AC', width: '100%', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
-  logo: { width: 250, height: 125, marginBottom: 30 },
-  slogan: { color: '#000', fontSize: 18, marginBottom: 30 },
-  loginText: { color: '#000', fontSize: 22, marginBottom: 30 },
-  input: { width: '80%', height: 50, backgroundColor: '#E0F2F7', borderRadius: 5, paddingHorizontal: 15, marginBottom: 15, borderWidth: 1, borderColor: '#B0BEC5' },
-  firstLogin: { color: '#000', fontSize: 14, marginTop: 20, marginBottom: 20, textDecorationLine: 'underline' },
-  button: { backgroundColor: '#fff', paddingVertical: 15, paddingHorizontal: 50, borderRadius: 5, borderWidth: 1, borderColor: '#ddd' },
-  buttonText: { color: '#4DB6AC', fontSize: 18, fontWeight: 'bold' },
+  container: {
+    flex: 1,
+    backgroundColor: '#C8E6C9',  // même fond vert clair
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    marginBottom: 30,
+  },
+  loginText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0B3D0B',  // vert foncé
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    fontSize: 16,
+    color: '#333',
+  },
+  firstLogin: {
+    color: '#0B3D0B',  // vert foncé
+    fontSize: 14,
+    marginBottom: 30,
+    textDecorationLine: 'underline',
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#0B3D0B',  // bouton vert foncé
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',  // texte blanc
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });

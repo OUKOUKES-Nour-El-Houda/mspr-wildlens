@@ -10,7 +10,6 @@ export default function AdminScreen() {
   const handleLogout = () => {
     navigation.navigate('Login');
   };
-
   const handleManageUsers = () => {
     alert('Gérer les utilisateurs - Fonctionnalité à venir');
   };

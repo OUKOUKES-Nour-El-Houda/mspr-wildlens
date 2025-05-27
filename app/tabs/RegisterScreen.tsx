@@ -21,13 +21,14 @@ export default function RegisterScreen() {
     <View style={styles.container}>
       <View style={styles.banner}>
         <Image source={require('../../assets/images/logo_vert.png')} style={styles.logo} />
-        <Text style={styles.title}>INSCRIVEZ VOUS</Text>
+        <Text style={styles.title}>INSCRIVEZ-VOUS</Text>
         <TextInput
           style={styles.input}
           placeholder="Nom d’utilisateur"
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
+          placeholderTextColor="#666"
         />
         <TextInput
           style={styles.input}
@@ -36,6 +37,16 @@ export default function RegisterScreen() {
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
+          placeholderTextColor="#666"
+        />
+         <TextInput
+          style={styles.input}
+          placeholder="Téléphone"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          placeholderTextColor="#666"
         />
         <TextInput
           style={styles.input}
@@ -43,6 +54,7 @@ export default function RegisterScreen() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          placeholderTextColor="#666"
         />
         <TextInput
           style={styles.input}
@@ -50,6 +62,7 @@ export default function RegisterScreen() {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry
+          placeholderTextColor="#666"
         />
         <TouchableWithoutFeedback onPress={handleLoginPress}>
           <Text style={styles.accountText}>Vous avez déjà un compte ?</Text>
@@ -63,28 +76,54 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#C8E6C9', // vert clair
+  },
   banner: {
     flex: 1,
-    backgroundColor: '#fff',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundImage: require('../../assets/images/banner-shape-green.png'),
   },
-  logo: { width: 50, height: 50, marginBottom: 20 },
-  title: { color: '#4CAF50', fontSize: 24, fontWeight: 'bold', marginBottom: 40 },
+  logo: { 
+    width: 80, 
+    height: 80, 
+    marginBottom: 20,
+  },
+  title: { 
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0B3D0B',  // vert foncé
+    marginBottom: 40,
+  },
   input: {
     width: '80%',
     height: 50,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#fff',
     borderRadius: 10,
     paddingHorizontal: 15,
     marginBottom: 15,
-    borderWidth: 0,
-    color: '#fff',
+    color: '#333',
   },
-  accountText: { color: '#B0BEC5', fontSize: 14, marginBottom: 20, textDecorationLine: 'underline' },
-  button: { backgroundColor: '#4CAF50', paddingVertical: 15, paddingHorizontal: 60, borderRadius: 10, marginBottom: 20 },
-  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  accountText: { 
+    color: '#0B3D0B',  // vert foncé
+    fontSize: 14,
+    marginBottom: 20,
+    textDecorationLine: 'underline',
+    textAlign: 'center',
+  },
+  button: { 
+    backgroundColor: '#0B3D0B',  // bouton vert foncé
+    paddingVertical: 15, 
+    paddingHorizontal: 60, 
+    borderRadius: 10, 
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  buttonText: { 
+    color: '#fff',  // texte blanc
+    fontSize: 18, 
+    fontWeight: 'bold',
+  },
 });
