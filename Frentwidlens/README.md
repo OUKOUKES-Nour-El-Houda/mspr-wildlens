@@ -14,15 +14,16 @@ npm (inclus avec Node.js)
 * Un éditeur de code (ex. Visual Studio Code)
 
 # Get Started
-# Install dependencies
 
-# pm install
+Install dependencies
+
+* pm install
 Cela installera les dépendances nécessaires, y compris React Native, React Navigation, et @expo/vector-icons (pour Ionicons).
 
 
 # Start the app
 
-# npx expo start
+* npx expo start
 Une fois lancé, vous trouverez des options pour ouvrir l’app sur :
 
 * Expo Go (scan du QR code avec l’application Expo Go sur votre téléphone)
@@ -31,11 +32,11 @@ iOS simulator
 * L’application démarrera sur l’écran de connexion. Vous pouvez tester avec les identifiants "admin"/"admin" pour accéder à l’écran administrateur.
 
 # Fonctionnalités
- *Connexion : Permet de se connecter avec des identifiants prédéfinis ("admin"/"admin") pour accéder à l’interface administrateur.
- *Inscription : Permet de créer un compte en saisissant des informations comme le nom, l’e-mail, le téléphone, et un mot de passe.
-*Écran Admin : Fournit un hub pour gérer les scans, consulter ou soumettre des avis, et naviguer vers d’autres sections (profil, contact) avec une option de déconnexion.
- *Profil : Permet de consulter et modifier les informations personnelles (nom, prénom, e-mail, téléphone) en mode édition.
-*Scan : Offre une interface pour lancer un scan d’empreinte animale (fonctionnalité simulée, non connectée à une API).
+ * Connexion : Permet de se connecter avec des identifiants prédéfinis ("admin"/"admin") pour accéder à l’interface administrateur.
+ * Inscription : Permet de créer un compte en saisissant des informations comme le nom, l’e-mail, le téléphone, et un mot de passe.
+* Écran Admin : Fournit un hub pour gérer les scans, consulter ou soumettre des avis, et naviguer vers d’autres sections (profil, contact) avec une option de déconnexion.
+ * Profil : Permet de consulter et modifier les informations personnelles (nom, prénom, e-mail, téléphone) en mode édition.
+* Scan : Offre une interface pour lancer un scan d’empreinte animale (fonctionnalité simulée, non connectée à une API).
 
 
 
