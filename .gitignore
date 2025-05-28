@@ -1,4 +1,3 @@
-/API_modele/venv/
 /target
 *.jar
 *.log
@@ -6,3 +5,4 @@
 .env
 *.iml
 .idea/
+API_modele/venv/

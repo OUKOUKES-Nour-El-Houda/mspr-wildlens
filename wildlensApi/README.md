@@ -25,6 +25,15 @@ Ce backend fournit une API RESTful pour gérer les opérations (CRUD) sur les en
 git clone https://github.com/OUKOUKES-Nour-El-Houda/mspr-wildlens.git
 cd wildlensApi
 ```
+### Modèle IA
+
+Le modèle IA n’est **pas inclus** dans le dépôt Git (pour des raisons de taille et de bonnes pratiques).
+
+## Télécharger le modèle
+Téléchargez-le ici : https://drive.google.com/file/d/1UQsKBF8qnqqCQIWLSsKbQrrkCQzA0eDh/view?usp=drive_link
+
+Puis placez-le dans le dossier : `/models/best.pt`
+
 
 ### Démarrer l'application avec Docker
 Ouvrir un terminal à la racine du projet puis exécuter :
