@@ -1,0 +1,8 @@
+/target
+*.jar
+*.log
+*.class
+.env
+*.iml
+.idea/
+API_modele/venv/
