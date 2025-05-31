@@ -17,7 +17,7 @@ npm (inclus avec Node.js)
 
 Install dependencies
 
-* pm install
+* npm install
 Cela installera les dépendances nécessaires, y compris React Native, React Navigation, et @expo/vector-icons (pour Ionicons).
 
 

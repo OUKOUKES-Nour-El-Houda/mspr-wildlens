@@ -138,7 +138,7 @@ export default function AdminScreen() {
             </View>
             <View style={styles.advantageItem}>
               <Image
-                source={require('../../assets/images/Image100%Securisé.png')} // Vérifiez le chemin
+                source={require('../../assets/images/ImageSecurisé.png')} // Vérifiez le chemin
                 style={styles.iconImage}
               />
               <Text style={styles.advantageText}>100% sécurisée</Text>
