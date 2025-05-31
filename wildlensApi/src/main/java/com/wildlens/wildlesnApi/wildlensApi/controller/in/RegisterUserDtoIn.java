@@ -4,17 +4,18 @@ package com.wildlens.wildlesnApi.wildlensApi.controller.in;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class LoginUserDtoIn {
-        private String name_user;
-        private String username_user;
-        private String mail_user;
+public class RegisterUserDtoIn {
+        private String nameUser;
+        private String usernameUser;
+        private String mailUser;
         private String password;
-        private LocalDate registration_date;
+        private LocalDateTime registrationDate;
 
 }

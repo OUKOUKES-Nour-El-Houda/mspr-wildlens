@@ -10,7 +10,7 @@ import lombok.*;
 public class InfoSpeciesDtoIn {
     private String especes;
     private String description;
-    private String nom_latin;
+    private String nomLatin;
     private String famille;
     private String taille;
     private String region;

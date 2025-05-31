@@ -18,7 +18,8 @@ public class InfoSpecies {
     private String especes;
     @Column(columnDefinition = "TEXT")
     private String description;
-    private String nom_latin;
+    @Column(name="nom_latin")
+    private String nomLatin;
     private String famille;
     private String taille;
     private String region;

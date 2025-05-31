@@ -33,11 +33,12 @@ public class ExceptionHandlerConfiguration extends ResponseEntityExceptionHandle
     }
 
     @Getter
-    @AllArgsConstructor
     public static class ErrorResponse {
         String error;
         String errorDescription;
-
-
+        public ErrorResponse(String error, String errorDescription) {
+            this.error = error;
+            this.errorDescription = errorDescription;
+        }
     }
 }

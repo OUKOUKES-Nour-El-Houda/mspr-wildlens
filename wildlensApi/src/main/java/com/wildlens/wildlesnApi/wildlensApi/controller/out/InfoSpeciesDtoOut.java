@@ -26,7 +26,7 @@ public class InfoSpeciesDtoOut {
         this.id = infoSpecies.getId();
         this.especes = infoSpecies.getEspeces();
         this.description = infoSpecies.getDescription();
-        this.nom_latin = infoSpecies.getNom_latin();
+        this.nom_latin = infoSpecies.getNomLatin();
         this.famille = infoSpecies.getFamille();
         this.taille = infoSpecies.getTaille();
         this.region= infoSpecies.getRegion();

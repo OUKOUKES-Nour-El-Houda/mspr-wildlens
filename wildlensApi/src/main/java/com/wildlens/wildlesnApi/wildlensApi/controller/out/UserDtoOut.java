@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -14,17 +14,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserDtoOut {
     private Long id;
-    private String name_user;
-    private String username_user;
-    private String mail_user;
-    private LocalDate registration_date;
+    private String nameUser;
+    private String usernameUser;
+    private String mailUser;
+    private LocalDateTime registrationDate;
 
     public UserDtoOut(User user) {
         this.id = user.getId();
-        this.name_user = user.getName_user();
-        this.username_user = user.getUsername_user();
-        this.mail_user = user.getMail_user();
-        this.registration_date= user.getRegistration_date();
+        this.nameUser = user.getNameUser();
+        this.usernameUser = user.getUsernameUser();
+        this.mailUser = user.getMailUser();
+        this.registrationDate= user.getRegistrationDate();
     }
 
 }
