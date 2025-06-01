@@ -27,6 +27,8 @@ public class Identification {
 
     private LocalDateTime identificationDate;  // Date de l'identification
 
+    private Float confidence;
+
     // Getters and Setters
 }
 

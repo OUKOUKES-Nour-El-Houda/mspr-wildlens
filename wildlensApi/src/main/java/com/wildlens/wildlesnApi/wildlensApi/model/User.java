@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate; // Importer la classe LocalDate pour utiliser les dates
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "profil")
@@ -18,13 +18,20 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String name_user;
-    private String username_user;
 
-    @Column(unique= true)
-    private String mail_user;
+    @Column(name="name_user")
+    private String nameUser;
+
+    @Column(name="username_user")
+    private String usernameUser;
+
+    @Column(name="mail_user")
+    private String mailUser;
+
     private String password;
-    private LocalDate registration_date;
+
+    @Column(name="registration_date")
+    private LocalDateTime registrationDate;
 
     // Getters and Setters
 }

@@ -25,8 +25,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class InfoSpeciesController {
 
     private final InfoSpeciesService infoSpeciesService;

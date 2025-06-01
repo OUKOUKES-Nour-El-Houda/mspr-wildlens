@@ -1,4 +1,6 @@
 /target
+/API_modele/utils/__pycache__/
+*.pyc
 *.jar
 *.log
 *.class
@@ -6,3 +8,5 @@
 *.iml
 .idea/
 API_modele/venv/
+wildlensApi/src/main/resources/uploads/
+API_modele/uploads/

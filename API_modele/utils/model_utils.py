@@ -39,9 +39,15 @@ class YOLOPredictor:
             if len(results) == 0 or len(results[0].boxes) == 0:
                 return {
                     'success': False,
-                    'message': 'Aucune empreinte détectée dans l\'image',
-                    'animal': None,
-                    'confidence': 0.0
+                    'espece': None,
+                    'confidence': 0.0,
+                    'description': '',
+                    'famille': '',
+                    'funFact': '',
+                    'habitat': '',
+                    'nomLatin': '',
+                    'region': '',
+                    'taille': ''
                 }
             
             # Récupérer la meilleure prédiction
@@ -50,9 +56,15 @@ class YOLOPredictor:
             if best_detection is None:
                 return {
                     'success': False,
-                    'message': 'Aucune empreinte détectée avec suffisamment de confiance',
-                    'animal': None,
-                    'confidence': 0.0
+                    'espece': None,
+                    'confidence': 0.0,
+                    'description': '',
+                    'famille': '',
+                    'funFact': '',
+                    'habitat': '',
+                    'nomLatin': '',
+                    'region': '',
+                    'taille': ''
                 }
             
             # Récupérer les informations de l'espèce
@@ -60,18 +72,30 @@ class YOLOPredictor:
             
             return {
                 'success': True,
-                'animal': best_detection['class_name'],
+                'espece': best_detection['class_name'],  
                 'confidence': float(best_detection['confidence']),
-                'species_info': species_info
+                'description': species_info.get("Description", ''),
+                'nomLatin': species_info.get("Nom latin", ''),
+                'famille': species_info.get("Famille", ''),
+                'taille': species_info.get("Taille", ''),
+                'region': species_info.get("Région", ''),
+                'habitat': species_info.get("Habitat", ''),
+                'funFact': species_info.get("Fun fact", '')               
             }
             
         except Exception as e:
             logger.error(f"Erreur lors de la prédiction : {e}")
             return {
                 'success': False,
-                'message': f'Erreur lors de l\'analyse : {str(e)}',
-                'animal': None,
-                'confidence': 0.0
+                'espece': None,
+                'confidence': 0.0,
+                'description': '',
+                'famille': '',
+                'funFact': '',
+                'habitat': '',
+                'nomLatin': '',
+                'region': '',
+                'taille': ''
             }
     
     def _get_best_detection(self, result) -> Dict[str, Any]:

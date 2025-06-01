@@ -5,6 +5,7 @@ import com.wildlens.wildlesnApi.wildlensApi.controller.out.InfoSpeciesDtoOut;
 import com.wildlens.wildlesnApi.wildlensApi.model.InfoSpecies;
 import com.wildlens.wildlesnApi.wildlensApi.repository.InfoSpeciesRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class InfoSpeciesService {
         InfoSpecies infoSpecies = InfoSpecies.builder()
                 .especes(infoSpeciesDtoIn.getEspeces())
                 .description(infoSpeciesDtoIn.getDescription())
-                .nom_latin(infoSpeciesDtoIn.getNom_latin())
+                .nomLatin(infoSpeciesDtoIn.getNomLatin())
                 .famille(infoSpeciesDtoIn.getFamille())
                 .taille(infoSpeciesDtoIn.getTaille())
                 .region(infoSpeciesDtoIn.getRegion())
