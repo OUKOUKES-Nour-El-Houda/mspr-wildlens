@@ -6,6 +6,7 @@ import LoginScreen from '../tabs/LoginScreen';
 import RegisterScreen from '../tabs/RegisterScreen';
 import AdminScreen from '../tabs/AdminScreen';
 import MonProfil from '../tabs/MonProfil';
+import ScanScreen from '../tabs/ScanScreen'; 
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Admin" component={AdminScreen} />
             <Stack.Screen name="MonProfil" component={MonProfil} />
+           <Stack.Screen name="Scan" component={ScanScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>

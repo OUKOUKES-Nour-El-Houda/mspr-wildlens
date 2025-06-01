@@ -1,29 +1,44 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
+import * as Camera from 'expo-camera';
 
 export default function AdminScreen() {
   const navigation = useNavigation();
-  const [menuVisible, setMenuVisible] = useState(false); // État pour afficher/masquer le menu
-  const scrollViewRef = useRef(null); // Référence pour le ScrollView
+  const [menuVisible, setMenuVisible] = useState(false);
+  const scrollViewRef = useRef(null);
 
   const handleLogout = () => {
     navigation.navigate('Login');
   };
+
   const handleManageUsers = () => {
-    alert('Gérer les utilisateurs - Fonctionnalité à venir');
+    Alert.alert('Gérer les utilisateurs', 'Fonctionnalité à venir');
   };
 
   const handleViewFeedback = () => {
     navigation.navigate('Feedback');
   };
 
-  const handleScanFootprint = () => {
-    navigation.navigate('Scan');
+  const handleScanFootprint = async () => {
+    const permissionResult = await Camera.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Erreur', 'Permission d’accès à la caméra requise !');
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      Alert.alert('Succès', `Image scannée : ${result.assets[0].uri}`);
+      // Traitez l’image ici (par exemple, envoyez-la à un serveur)
+    }
   };
 
   const handleLeaveFeedback = () => {
-    alert('Laisser un avis - Fonctionnalité à venir');
+    Alert.alert('Laisser un avis', 'Fonctionnalité à venir');
   };
 
   const handleHome = () => {
@@ -45,76 +60,102 @@ export default function AdminScreen() {
     setMenuVisible(!menuVisible);
   };
 
-  // Fonction pour scroller vers le haut
-  const scrollToTop = () => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: 0, animated: true });
-      console.log('Scrolling to top'); // Pour déboguer
-    } else {
-      console.log('ScrollView ref is not available'); // Pour déboguer
+  const handlePickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert('Erreur', 'Permission d’accès à la galerie requise !');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      Alert.alert('Succès', `Image sélectionnée : ${result.assets[0].uri}`);
     }
   };
 
-  // Fonction pour scroller vers le bas
+  const scrollToTop = () => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    }
+  };
+
   const scrollToBottom = () => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollToEnd({ animated: true });
-      console.log('Scrolling to bottom'); // Pour déboguer
-    } else {
-      console.log('ScrollView ref is not available'); // Pour déboguer
     }
   };
 
   return (
     <View style={styles.container}>
+      {/* En-tête fixe avec menu */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Image
+            source={require('../../assets/images/LogoPatteWildlens.png')}
+            style={styles.logo}
+          />
+          <Text style={styles.headerText}>WIDLENS</Text>
+        </View>
+        <TouchableOpacity style={styles.menuIcon} onPress={toggleMenu}>
+          <Text style={styles.menuLines}>☰</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Barre de navigation */}
+      {menuVisible && (
+        <View style={styles.navBar}>
+          <TouchableOpacity style={styles.navItem} onPress={handleHome}>
+            <Text style={styles.navText}>Accueil</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem} onPress={handleScanFootprint}>
+            <Text style={styles.navText}>Scan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem} onPress={handleViewFeedback}>
+            <Text style={styles.navText}>Feedback</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem} onPress={handleContact}>
+            <Text style={styles.navText}>Contact</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem} onPress={handleProfile}>
+            <Text style={styles.navText}>Mon Profil</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollContainer}
-        contentContainerStyle={{ paddingBottom: 20 }} // Pour éviter que le contenu soit coupé en bas
+        contentContainerStyle={{ paddingBottom: 20 }}
       >
-        {/* Section 1 : En-tête avec Logo, WIDLENS et Menu */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Image
-              source={require('../../assets/images/LogoPatteWildlens.png')} // Vérifiez le chemin
-              style={styles.logo}
-            />
-            <Text style={styles.headerText}>WIDLENS</Text>
-          </View>
-          <TouchableOpacity style={styles.menuIcon} onPress={toggleMenu}>
-            <Text style={styles.menuLines}>☰</Text>
-          </TouchableOpacity>
-          <View style={styles.headerLine} />
-        </View>
-
-        {/* Menu déroulant (affiché uniquement si menuVisible est vrai) */}
-        {menuVisible && (
-          <View style={styles.menuDropdown}>
-            <TouchableOpacity onPress={handleHome}>
-              <Text style={styles.menuItem}>Accueil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleScanFootprint}>
-              <Text style={styles.menuItem}>Scan</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleViewFeedback}>
-              <Text style={styles.menuItem}>Feedback</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleContact}>
-              <Text style={styles.menuItem}>Contact</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleProfile}>
-              <Text style={styles.menuItem}>Mon Profil</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Section 2 : Titre Principal avec Icônes de Pattes */}
+        {/* Section 1 : Titre Principal */}
         <View style={styles.titleSection}>
-          <Text style={styles.mainTitle}>BIENVENUE, ADMINISTRATEUR !</Text>
+          <Text style={styles.mainTitle}>BIENVENUE !</Text>
           <View style={styles.pawIcons}>
             {[...Array(8)].map((_, index) => (
               <Text key={index} style={styles.pawIcon}>🐾</Text>
             ))}
+          </View>
+        </View>
+
+        {/* Section 2 : Scan Intro */}
+        <View style={styles.scanSection}>
+          <Text style={styles.sectionTitle}>DÉMARREZ VOTRE ANALYSE</Text>
+          <Image
+            source={{ uri: 'https://images.unsplash.com/photo-1605723517503-3cadb131dd8e' }}
+            style={styles.scanImage}
+          />
+          <Text style={styles.sectionText}>
+            Scannez une empreinte ou importez une photo pour identifier l’animal en quelques secondes.
+          </Text>
+          <View style={styles.scanButtons}>
+            <TouchableOpacity style={styles.scanButton} onPress={handleScanFootprint}>
+              <Text style={styles.buttonText}>Scanner</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.uploadButton} onPress={handlePickImage}>
+              <Text style={styles.buttonText}>Uploader</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -124,21 +165,21 @@ export default function AdminScreen() {
           <View style={styles.advantages}>
             <View style={styles.advantageItem}>
               <Image
-                source={require('../../assets/images/Image5Min.jpg')} // Vérifiez le chemin
+                source={require('../../assets/images/Image5Min.jpg')}
                 style={styles.iconImage}
               />
               <Text style={styles.advantageText}>rapide à configurer</Text>
             </View>
             <View style={styles.advantageItem}>
               <Image
-                source={require('../../assets/images/DrapeauFrance.png')} // Vérifiez le chemin
+                source={require('../../assets/images/DrapeauFrance.png')}
                 style={styles.iconImage}
               />
               <Text style={styles.advantageText}>made in france</Text>
             </View>
             <View style={styles.advantageItem}>
               <Image
-                source={require('../../assets/images/ImageSecurisé.png')} // Vérifiez le chemin
+                source={require('../../assets/images/ImageSecurisé.png')}
                 style={styles.iconImage}
               />
               <Text style={styles.advantageText}>100% sécurisée</Text>
@@ -153,7 +194,7 @@ export default function AdminScreen() {
             notre application consiste à scanner une empreinte d’un animal
           </Text>
           <Image
-            source={require('../../assets/images/ImageScanAccueil2.png')} // Vérifiez le chemin
+            source={require('../../assets/images/ImageScanAccueil2.png')}
             style={styles.illustration}
           />
         </View>
@@ -166,7 +207,7 @@ export default function AdminScreen() {
             </Text>
           </TouchableOpacity>
           <Image
-            source={require('../../assets/images/ImageScanAccueil1.webp')} // Vérifiez le chemin
+            source={require('../../assets/images/ImageScanAccueil1.webp')}
             style={styles.illustration}
           />
         </View>
@@ -192,13 +233,13 @@ export default function AdminScreen() {
             <Text style={styles.buttonText}>voir les retours</Text>
           </TouchableOpacity>
           <Image
-            source={require('../../assets/images/ImageAvis1.png')} // Vérifiez le chemin
+            source={require('../../assets/images/ImageAvis1.png')}
             style={styles.illustration}
           />
           <View style={styles.feedbackIcons}>
             <Text style={styles.starIcon}>⭐⭐⭐⭐⭐</Text>
             <Image
-              source={{ uri: 'https://via.placeholder.com/100x100' }} // Remplacez par votre image
+              source={{ uri: 'https://via.placeholder.com/100x100' }}
               style={styles.feedbackImage}
             />
           </View>
@@ -215,7 +256,7 @@ export default function AdminScreen() {
         <View style={styles.footer}>
           <View style={styles.footerLeft}>
             <Image
-              source={require('../../assets/images/WildlensLogoVert.png')} // Logo vert de WIDLENS
+              source={require('../../assets/images/WildlensLogoVert.png')}
               style={styles.footerLogo}
             />
             <Text style={styles.footerSlogan}>To know them is to love them</Text>
@@ -243,7 +284,7 @@ export default function AdminScreen() {
         </View>
       </ScrollView>
 
-      {/* Boutons de défilement à droite */}
+      {/* Boutons de défilement */}
       <View style={styles.scrollButtons}>
         <TouchableOpacity style={styles.scrollButton} onPress={scrollToTop}>
           <Text style={styles.scrollButtonText}>↑</Text>
@@ -263,58 +304,78 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
+    marginTop: 70,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 10,
     paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   logo: {
-    width: 50,
-    height: 50,
-    marginRight: 10,
+    width: 40,
+    height: 40,
+    marginRight: 8,
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#4CAF50',
   },
   menuIcon: {
-    padding: 10,
+    padding: 8,
   },
   menuLines: {
-    fontSize: 30,
+    fontSize: 24,
     color: '#4CAF50',
   },
-  menuDropdown: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    alignItems: 'center',
+  navBar: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    backgroundColor: '#f5f5f5',
+    paddingVertical: 10,
+    zIndex: 999,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  menuItem: {
+  navItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+  },
+  navText: {
     fontSize: 16,
     color: '#333',
-    paddingVertical: 5,
-  },
-  headerLine: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: 5,
-    backgroundColor: '#4CAF50',
+    fontWeight: '500',
+    textAlign: 'center',
   },
   titleSection: {
     alignItems: 'center',
     paddingVertical: 20,
+    backgroundColor: '#e8f5e9',
   },
   mainTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#4CAF50',
     marginBottom: 10,
@@ -326,74 +387,131 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pawIcon: {
-    fontSize: 24,
+    fontSize: 20,
     margin: 2,
     color: '#FFC107',
   },
+  scanSection: {
+    padding: 15,
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    marginHorizontal: 10,
+    marginVertical: 20,
+    marginTop: 30, // Déplacer vers le bas pour plus de visibilité
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   section: {
-    padding: 20,
+    padding: 15,
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#4CAF50',
-    marginBottom: 15,
+    marginBottom: 12,
     textTransform: 'uppercase',
   },
   sectionText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
+    lineHeight: 20,
+  },
+  scanImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+  },
+  scanButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+  },
+  scanButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    width: '48%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  uploadButton: {
+    backgroundColor: '#388E3C',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    width: '48%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   advantages: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   advantageItem: {
     alignItems: 'center',
+    width: '30%',
   },
   advantageText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#333',
     textAlign: 'center',
+    marginTop: 5,
   },
   illustration: {
-    width: 200,
-    height: 150,
+    width: 180,
+    height: 135,
     marginVertical: 10,
+    borderRadius: 8,
   },
   actionButton: {
     backgroundColor: '#4CAF50',
-    paddingVertical: 20,
-    paddingHorizontal: 50,
-    borderRadius: 12,
-    marginVertical: 10,
-    width: '60%',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginVertical: 8,
+    width: '70%',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   logoutButton: {
     backgroundColor: '#4CAF50',
-    paddingVertical: 20,
-    paddingHorizontal: 50,
-    borderRadius: 12,
-    marginVertical: 20,
-    width: '60%',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 10,
+    marginVertical: 15,
+    width: '70%',
     alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    borderWidth: 1,
-    borderColor: '#fff',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
   },
   feedbackIcons: {
     flexDirection: 'row',
@@ -402,21 +520,23 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   starIcon: {
-    fontSize: 24,
+    fontSize: 20,
     color: '#f4a261',
   },
   feedbackImage: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
+    borderRadius: 8,
   },
   iconImage: {
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
     marginBottom: 5,
+    borderRadius: 5,
   },
   footer: {
     backgroundColor: '#4CAF50',
-    padding: 20,
+    padding: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -427,69 +547,69 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   footerLogo: {
-    width: 50,
-    height: 50,
-    marginBottom: 10,
+    width: 40,
+    height: 40,
+    marginBottom: 8,
   },
   footerSlogan: {
     color: '#fff',
-    fontSize: 14,
-    marginBottom: 10,
+    fontSize: 12,
+    marginBottom: 8,
   },
   footerLink: {
     color: '#fff',
-    fontSize: 14,
-    marginBottom: 5,
+    fontSize: 12,
+    marginBottom: 4,
   },
   footerTitle: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 15,
+    marginBottom: 8,
   },
   footerContact: {
     color: '#fff',
-    fontSize: 14,
-    marginBottom: 5,
+    fontSize: 12,
+    marginBottom: 4,
   },
   footerCopyright: {
     color: '#fff',
-    fontSize: 12,
-    marginTop: 20,
+    fontSize: 10,
+    marginTop: 15,
   },
   socialIcons: {
     flexDirection: 'row',
   },
   socialIcon: {
-    fontSize: 24,
+    fontSize: 20,
     color: '#fff',
-    marginHorizontal: 10,
+    marginHorizontal: 8,
     borderWidth: 1,
     borderColor: '#fff',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
+    borderRadius: 15,
+    width: 30,
+    height: 30,
     textAlign: 'center',
-    lineHeight: 40,
+    lineHeight: 30,
   },
   scrollButtons: {
     position: 'absolute',
-    right: 20,
-    bottom: 20,
+    right: 15,
+    bottom: 15,
     alignItems: 'center',
   },
   scrollButton: {
     backgroundColor: '#4CAF50',
-    borderRadius: 25,
-    width: 40,
-    height: 40,
+    borderRadius: 20,
+    width: 35,
+    height: 35,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 5,
+    marginVertical: 4,
   },
   scrollButtonText: {
     color: '#fff',
-    fontSize: 20,
+    fontSize: 18,
   },
 });
