@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import * as Camera from 'expo-camera';
 
 export default function AdminScreen() {
   const navigation = useNavigation();
@@ -18,22 +17,32 @@ export default function AdminScreen() {
   };
 
   const handleViewFeedback = () => {
-    navigation.navigate('Feedback');
+    Alert.alert('Feedback', 'Fonctionnalité à venir');
   };
 
   const handleScanFootprint = async () => {
-    const permissionResult = await Camera.requestCameraPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert('Erreur', 'Permission d’accès à la caméra requise !');
-      return;
-    }
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-    if (!result.canceled) {
-      Alert.alert('Succès', `Image scannée : ${result.assets[0].uri}`);
-      // Traitez l’image ici (par exemple, envoyez-la à un serveur)
+    try {
+      // Demander la permission pour la caméra
+      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert('Erreur', 'Permission d’accès à la caméra requise !');
+        return;
+      }
+
+      // Ouvrir la caméra
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsEditing: false,
+      });
+
+      // Vérifier si l'utilisateur n'a pas annulé
+      if (!result.canceled) {
+        navigation.navigate('ResultScreen', { imageUri: result.assets[0].uri });
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'ouverture de la caméra :', error);
+      Alert.alert('Erreur', `Impossible d\'ouvrir la caméra : ${error.message}`);
     }
   };
 
@@ -42,13 +51,8 @@ export default function AdminScreen() {
   };
 
   const handleHome = () => {
-    navigation.navigate('Accueil');
     setMenuVisible(false);
-  };
-
-  const handleContact = () => {
-    navigation.navigate('Contact');
-    setMenuVisible(false);
+    // Reste sur AdminScreen (Accueil)
   };
 
   const handleProfile = () => {
@@ -61,17 +65,22 @@ export default function AdminScreen() {
   };
 
   const handlePickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
-      Alert.alert('Erreur', 'Permission d’accès à la galerie requise !');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-    if (!result.canceled) {
-      Alert.alert('Succès', `Image sélectionnée : ${result.assets[0].uri}`);
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert('Erreur', 'Permission d’accès à la galerie requise !');
+        return;
+      }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+      });
+      if (!result.canceled) {
+        navigation.navigate('ResultScreen', { imageUri: result.assets[0].uri });
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'accès à la galerie :', error);
+      Alert.alert('Erreur', 'Impossible d\'accéder à la galerie.');
     }
   };
 
@@ -115,11 +124,11 @@ export default function AdminScreen() {
           <TouchableOpacity style={styles.navItem} onPress={handleViewFeedback}>
             <Text style={styles.navText}>Feedback</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.navItem} onPress={handleContact}>
-            <Text style={styles.navText}>Contact</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.navItem} onPress={handleProfile}>
             <Text style={styles.navText}>Mon Profil</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navItem} onPress={handleLogout}>
+            <Text style={styles.navText}>Déconnexion</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -214,10 +223,6 @@ export default function AdminScreen() {
 
         {/* Section 6 : Scanner une empreinte */}
         <View style={styles.section}>
-          <Text style={styles.sectionText}>si vous souhaitez scanner une empreinte</Text>
-          <TouchableOpacity style={styles.actionButton} onPress={handleScanFootprint}>
-            <Text style={styles.buttonText}>scanner une empreinte</Text>
-          </TouchableOpacity>
           <Text style={styles.sectionText}>grâce à vos avis, l’application s’améliorera</Text>
           <TouchableOpacity style={styles.actionButton} onPress={handleLeaveFeedback}>
             <Text style={styles.buttonText}>laisser votre avis</Text>
@@ -304,14 +309,15 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
-    marginTop: 70,
+    marginTop: 100,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    paddingTop: 30,
     backgroundColor: '#fff',
     position: 'absolute',
     top: 0,
@@ -336,14 +342,14 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: '#31C48D',
   },
   menuIcon: {
     padding: 8,
   },
   menuLines: {
     fontSize: 24,
-    color: '#4CAF50',
+    color: '#31C48D',
   },
   navBar: {
     position: 'absolute',
@@ -377,7 +383,7 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: '#31C48D',
     marginBottom: 10,
     textTransform: 'uppercase',
   },
@@ -398,7 +404,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginHorizontal: 10,
     marginVertical: 20,
-    marginTop: 30, // Déplacer vers le bas pour plus de visibilité
+    marginTop: 30,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -412,7 +418,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: '#31C48D',
     marginBottom: 12,
     textTransform: 'uppercase',
   },
@@ -429,7 +435,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#4CAF50',
+    borderColor: '#31C48D',
   },
   scanButtons: {
     flexDirection: 'row',
@@ -437,7 +443,7 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   scanButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#31C48D',
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 8,
@@ -450,7 +456,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   uploadButton: {
-    backgroundColor: '#388E3C',
+    backgroundColor: '#31C48D',
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 8,
@@ -491,7 +497,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   actionButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#31C48D',
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 10,
@@ -505,7 +511,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   logoutButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#31C48D',
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 10,
@@ -535,7 +541,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   footer: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#31C48D',
     padding: 15,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -600,7 +606,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scrollButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#31C48D',
     borderRadius: 20,
     width: 35,
     height: 35,
