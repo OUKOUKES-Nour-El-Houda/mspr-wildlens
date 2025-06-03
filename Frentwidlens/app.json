@@ -7,16 +7,30 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
+    "permissions": [
+      "camera",
+      "mediaLibrary"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Cette application utilise la caméra pour scanner les empreintes d'animaux.",
+        "NSPhotoLibraryUsageDescription": "Cette application a besoin d'accéder à votre galerie pour uploader des images."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["CAMERA", "ACCESS_MEDIA_LOCATION", "READ_EXTERNAL_STORAGE", "ACCESS_FINE_LOCATION"]
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_MEDIA_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "plugins": [
       [
@@ -32,3 +46,4 @@
     ]
   }
 }
+

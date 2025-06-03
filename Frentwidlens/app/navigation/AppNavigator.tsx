@@ -6,13 +6,12 @@ import LoginScreen from '../tabs/LoginScreen';
 import RegisterScreen from '../tabs/RegisterScreen';
 import AdminScreen from '../tabs/AdminScreen';
 import MonProfil from '../tabs/MonProfil';
-import ScanScreen from '../tabs/ScanScreen'; 
+import ResultScreen from '../tabs/ResultScreen';
 
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <View style={styles.phoneFrame}>  {/* Cadre extérieur */}
       <View style={styles.screen}>  {/* Écran intérieur */}
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
@@ -20,26 +19,15 @@ export default function AppNavigator() {
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="Admin" component={AdminScreen} />
             <Stack.Screen name="MonProfil" component={MonProfil} />
-           <Stack.Screen name="Scan" component={ScanScreen} />
+        <Stack.Screen name="ResultScreen" component={ResultScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  phoneFrame: {
-    width: 400,
-    height: 800,
-    backgroundColor: '#000',   // Cadre noir
-    padding: 10,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-    marginTop: 50,
-  },
+  
   screen: {
     flex: 1,
     width: '100%',
