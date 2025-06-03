@@ -39,11 +39,7 @@ public class ImageController {
             @RequestParam("longitude") String longitude,
             @RequestParam("profilId") Long profilId
     ) {
-//        ImageDtoIn dtoIn = new ImageDtoIn();
-//        dtoIn.setLatitude("latitude");
-//        dtoIn.setLongitude("longitude");
-//        dtoIn.setProfilId(profilId);
-//        dtoIn.setDate(LocalDateTime.now());
+
         ImageDtoIn dtoIn =ImageDtoIn.builder()
                 .latitude(latitude)
                 .longitude(longitude)
