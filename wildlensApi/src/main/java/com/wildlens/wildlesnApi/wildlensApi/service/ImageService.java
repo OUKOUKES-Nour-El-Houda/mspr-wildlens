@@ -50,100 +50,7 @@ public class ImageService {
     private final Path uploadDir = Paths.get("src/main/resources/uploads");
 
     public ImageDtoOut processImage(MultipartFile multipartFile, ImageDtoIn dtoIn) {
-//        try {
-//            // Étape 1 : sauvegarder l'image localement
-//            String filename = UUID.randomUUID() + ".png";
-//            File savedFile = new File(SAVE_PATH + filename);
-//            file.transferTo(savedFile);
-//
-//            // Étape 2 : appel à l'API Flask
-//            EspecePredictionResponse response = callFlask(savedFile);
-//
-//            if (!response.isSuccess()) {
-//                Files.deleteIfExists(savedFile.toPath());
-//                throw new RuntimeException("La prédiction a échoué.");
-//            }
-//
-//            // Étape 3 : récupération ou création de l'espèce
-//            InfoSpecies species = speciesRepository
-//                    .findByEspecesIgnoreCase(response.getSpeciesInfo().getEspece())
-//                    .orElseGet(() -> {
-//                        InfoSpecies s = InfoSpecies.builder()
-//                                .especes(response.getSpeciesInfo().getEspece())
-//                                .description(response.getSpeciesInfo().getDescription())
-//                                .nomLatin(response.getSpeciesInfo().getNomLatin())
-//                                .famille(response.getSpeciesInfo().getFamille())
-//                                .taille(response.getSpeciesInfo().getTaille())
-//                                .region(response.getSpeciesInfo().getRegion())
-//                                .habitat(response.getSpeciesInfo().getHabitat())
-//                                .funfact(response.getSpeciesInfo().getFunFact())
-//                                .build();
-//                        return speciesRepository.save(s);
-//                    });
-//
-//
-//            // Étape 4 : sauvegarde de l'image
-//            User user = userRepository.findById(dtoIn.getProfilId())
-//                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
-//
-//            Image image = Image.builder()
-//                    .photoUrl("/uploads/" + filename)
-//                    .latitude(dtoIn.getLatitude())
-//                    .longitude(dtoIn.getLongitude())
-//                    .date(dtoIn.getDate())
-//                    .user(user)
-//                    .build();
-//
-//            image = imageRepository.save(image);
-//
-//            // Étape 5 : enregistrement de l'identification
-//            Identification id = Identification.builder()
-//                    .image(image)
-//                    .species(species)
-//                    .confidence((float) response.getConfidence())
-//                    .identificationDate(LocalDateTime.now())
-//                    .build();
-//
-//            identificationRepository.save(id);
-//
-//            // Étape 6 : retour DTO enrichi
-//            return ImageDtoOut.builder()
-//                    .imageId(image.getImageId())
-//                    .photoUrl(image.getPhotoUrl())
-//                    .confidence((float) response.getConfidence())
-//                    .description(species.getDescription())
-//                    .espece(species.getEspeces())
-//                    .famille(species.getFamille())
-//                    .funFact(species.getFunfact())
-//                    .habitat(species.getHabitat())
-//                    .nomLatin(species.getNomLatin())
-//                    .region(species.getRegion())
-//                    .taille(species.getTaille())
-//                    .build();
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException("Erreur lors du traitement de l'image", e);
-//        }
-//    }
-//
-//    private EspecePredictionResponse callFlask(File file) {
-//        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-//        body.add("image", new FileSystemResource(file));
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-//
-//        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(body, headers);
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//        ResponseEntity<EspecePredictionResponse> response = restTemplate.postForEntity(
-//                "http://localhost:5000/api/predict", request, EspecePredictionResponse.class
-//        );
-//
-//        return response.getBody();
-//    }
 
-//
         try {
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
@@ -154,7 +61,7 @@ public class ImageService {
                 throw new RuntimeException("Nom de fichier invalide");
             }
 
-            String fileName = UUID.randomUUID() + "-" + originalFilename;
+            String fileName = UUID.randomUUID() + "-"  + originalFilename;
             Path filePath = uploadDir.resolve(fileName);
             Files.write(filePath, multipartFile.getBytes());
 
