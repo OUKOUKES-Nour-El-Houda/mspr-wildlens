@@ -5,16 +5,73 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+const ALLOWED_EMAILS = ['admin@example.com'];
+
 export default function LoginScreen() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState(''); // <-- nouvel état pour erreur mdp
   const navigation = useNavigation();
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.toLowerCase());
+  };
+
+  const isEmailAllowed = (email) => {
+    return ALLOWED_EMAILS.includes(email.toLowerCase());
+  };
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    if (!text.trim()) {
+      setEmailError('Veuillez entrer une adresse e-mail.');
+    } else if (!validateEmail(text)) {
+      setEmailError('Veuillez entrer une adresse e-mail valide (ex. : user@example.com).');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    if (!text.trim()) {
+      setPasswordError('Veuillez entrer un mot de passe.');
+    } else {
+      setPasswordError('');
+    }
+  };
+
   const handleLogin = () => {
-    if (username === 'admin' && password === 'admin') {
+    // Reset errors
+    setPasswordError('');
+
+    if (!email.trim()) {
+      Alert.alert('Erreur', 'Veuillez entrer une adresse e-mail.');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Alert.alert('Erreur', 'Veuillez entrer une adresse e-mail valide.');
+      return;
+    }
+
+    if (!isEmailAllowed(email)) {
+      Alert.alert('Erreur', 'Votre email n’est pas validé.');
+      return;
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Veuillez entrer un mot de passe.');
+      return;
+    }
+
+    if (email.toLowerCase() === 'admin@example.com' && password === 'admin') {
+      Alert.alert('Succès', 'Connexion réussie !');
       navigation.navigate('Admin');
     } else {
-      Alert.alert('Erreur', 'Identifiants incorrects. Utilisez "admin" pour le nom d\'utilisateur et le mot de passe.');
+      setPasswordError('Votre mot de passe est incorrect.');
     }
   };
 
@@ -29,20 +86,24 @@ export default function LoginScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="Nom d'utilisateur"
+        placeholder="Adresse e-mail"
         placeholderTextColor="#666"
-        value={username}
-        onChangeText={setUsername}
+        value={email}
+        onChangeText={handleEmailChange}
         autoCapitalize="none"
+        keyboardType="email-address"
       />
+      {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
       <TextInput
         style={styles.input}
         placeholder="Mot de passe"
         placeholderTextColor="#666"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={handlePasswordChange}
         secureTextEntry
       />
+      {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
       <TouchableWithoutFeedback onPress={handleRegisterPress}>
         <Text style={styles.firstLogin}>C’est votre première connexion ?</Text>
@@ -51,6 +112,10 @@ export default function LoginScreen() {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Se connecter</Text>
       </TouchableOpacity>
+
+      <TouchableWithoutFeedback onPress={() => navigation.navigate('ForgotPassword')}>
+        <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
+      </TouchableWithoutFeedback>
     </View>
   );
 }
@@ -58,10 +123,17 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#C8E6C9',  // même fond vert clair
+    backgroundColor: '#C8E6C9',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
+  },
+  forgotPassword: {
+    color: '#0B3D0B',
+    fontSize: 14,
+    marginBottom: 10,
+    textDecorationLine: 'underline',
+    textAlign: 'center',
   },
   logo: {
     width: 80,
@@ -71,7 +143,7 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#0B3D0B',  // vert foncé
+    color: '#0B3D0B',
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -81,26 +153,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 10,
     fontSize: 16,
     color: '#333',
   },
-  firstLogin: {
-    color: '#0B3D0B',  // vert foncé
+  errorText: {
+    color: '#D32F2F',
     fontSize: 14,
+    marginBottom: 10,
+    textAlign: 'left',
+    alignSelf: 'flex-start',
+  },
+  firstLogin: {
+    color: '#0B3D0B',
+    fontSize: 14,
+    marginTop: 20, 
     marginBottom: 30,
     textDecorationLine: 'underline',
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#0B3D0B',  // bouton vert foncé
+    backgroundColor: '#0B3D0B',
     width: '100%',
     paddingVertical: 16,
     borderRadius: 10,
     alignItems: 'center',
+    marginTop: 5,
   },
   buttonText: {
-    color: '#fff',  // texte blanc
+    color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },

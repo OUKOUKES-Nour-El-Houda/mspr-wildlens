@@ -24,7 +24,15 @@ export default function RegisterScreen() {
         <Text style={styles.title}>INSCRIVEZ-VOUS</Text>
         <TextInput
           style={styles.input}
-          placeholder="Nom d’utilisateur"
+          placeholder="Nom"
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          placeholderTextColor="#666"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Prenom"
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"

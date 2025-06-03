@@ -330,6 +330,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
+  
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -353,13 +354,13 @@ const styles = StyleSheet.create({
   },
   navBar: {
     position: 'absolute',
-    top: 60,
+    top: 90,
     left: 0,
     right: 0,
     backgroundColor: '#f5f5f5',
     paddingVertical: 10,
-    zIndex: 999,
-    elevation: 4,
+    zIndex: 9999,
+    elevation: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
