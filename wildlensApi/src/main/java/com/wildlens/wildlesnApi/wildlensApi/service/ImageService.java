@@ -123,6 +123,7 @@ public class ImageService {
                     .nomLatin(response.getNomLatin())
                     .region(response.getRegion())
                     .taille(response.getTaille())
+                    .success(response.getSuccess())
                     .build();
 
         } catch (IOException e) {

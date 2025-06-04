@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image,  Alert} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
 
 export default function ResultScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  const imageUri = route.params?.imageUri || 'https://images.unsplash.com/photo-1605723517503-3cadb131dd8e';
+
+  const { imageUri, base64, location, source } = route.params || {};
+
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleLogout = () => {
     navigation.navigate('Login');
-  };
-
-  const handleViewFeedback = () => {
-    Alert.alert('Feedback', 'Fonctionnalité à venir');
-  };
-
-  const handleScanFootprint = () => {
-    navigation.navigate('Admin');
   };
 
   const handleHome = () => {
@@ -34,6 +32,83 @@ export default function ResultScreen() {
     setMenuVisible(!menuVisible);
   };
 
+  const analyzeImage = async () => {
+    try {
+      if (!imageUri || !base64 || !location) {
+        throw new Error('Données manquantes (image, base64 ou localisation)');
+      }
+
+      const latitude = location.coords.latitude.toString();
+      const longitude = location.coords.longitude.toString();
+      const profilId = '1'; // À personnaliser
+
+      const extension = imageUri.split('.').pop().toLowerCase();
+      const mimeType = `image/${extension === 'jpg' ? 'jpeg' : extension}`;
+
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageUri,
+        name: `photo.${extension}`,
+        type: mimeType,
+      });
+      formData.append('latitude', latitude);
+      formData.append('longitude', longitude);
+      formData.append('profilId', profilId);
+
+      const url = 'http://192.168.223.227:8082/api/v1/images';
+
+      console.log('Envoi de l\'image au backend...');
+
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Réponse backend :', data);
+
+      if (data && (data.success || data.success === null)) {
+        setResult({
+          espece: data.espece || 'Espèce non identifiée',
+          description: data.description || 'Aucune description disponible',
+          confiance: data.confidence !== undefined ? (data.confidence * 100).toFixed(2) + '%' : 'Non disponible',
+          habitat: data.habitat || 'Information non disponible',
+          famille: data.famille || 'Non spécifiée',
+          funFact: data.funFact || 'Aucune anecdote disponible',
+          nomLatin: data.nomLatin || 'Nom latin inconnu',
+          region: data.region || 'Région non spécifiée',
+          taille: data.taille || 'Taille inconnue',
+          DateIdentification: data.identificationDate || 'Date non connue',
+        });
+      } else {
+        throw new Error('Réponse inattendue du backend');
+      }
+
+    } catch (error) {
+      console.error('Erreur lors de l\'analyse :', error);
+      setError(error.message || 'Erreur inattendue lors de l\'analyse');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (imageUri && base64 && location) {
+      setTimeout(() => {
+        analyzeImage();
+      }, 1000);
+    } else {
+      setError('Données manquantes pour l\'analyse');
+      setIsLoading(false);
+    }
+  }, [imageUri, base64, location]);
   return (
     <View style={styles.container}>
       {/* En-tête fixe avec menu */}
@@ -78,14 +153,42 @@ export default function ResultScreen() {
         {/* Section : Affichage de l'image */}
         <View style={styles.imageSection}>
           <Text style={styles.sectionTitle}>IMAGE SCANNÉE OU TÉLÉCHARGÉE</Text>
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.resultImage}
-          />
+          <Image source={{ uri: imageUri }} style={styles.resultImage} />
           <Text style={styles.sectionText}>
-            Voici l'image que vous avez scannée ou téléchargée. Vous pouvez maintenant analyser cette empreinte.
+            Voici l'image que vous avez scannée ou téléchargée.
           </Text>
-          <TouchableOpacity style={styles.actionButton} onPress={handleScanFootprint}>
+
+          <View style={styles.resultsContainer}>
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#007AFF" />
+                <Text style={styles.loadingText}>Analyse en cours...</Text>
+              </View>
+            ) : error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : (
+              <>
+                <Image source={{ uri: imageUri }} style={styles.image} />
+                <View style={styles.especeDetectedContainer}>
+                  <Text style={styles.especeLabel}>ESPÈCE DÉTECTÉE :</Text>
+                  <Text style={styles.especeName}>{result.espece}</Text>
+                </View>
+                <Text style={styles.text}>Nom Latin: {result.nomLatin}</Text>
+                <Text style={[styles.text, { fontWeight: 'bold' }]}>
+                  Confiance: {result.confiance}
+                </Text>
+                <Text style={styles.text}>Description: {result.description}</Text>
+                <Text style={styles.text}>Famille: {result.famille}</Text>
+                <Text style={styles.text}>Habitat: {result.habitat}</Text>
+                <Text style={styles.text}>Région: {result.region}</Text>
+                <Text style={styles.text}>Taille: {result.taille}</Text>
+                <Text style={styles.text}>Date d'identification: {result.DateIdentification}</Text>
+                <Text style={styles.text}>Fun Fact: {result.funFact}</Text>
+              </>
+            )}
+          </View>
+
+          <TouchableOpacity style={styles.actionButton} onPress={handleHome}>
             <Text style={styles.buttonText}>Retour à l'accueil</Text>
           </TouchableOpacity>
         </View>
@@ -124,12 +227,42 @@ export default function ResultScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
   },
+  especeDetectedContainer: {
+  alignItems: 'center',
+  marginBottom: 15,
+  marginTop: 10,
+},
+
+    especeLabel: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#31C48D',
+      textTransform: 'uppercase',
+      marginBottom: 4,
+    },
+
+    especeName: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      color: '#31C48D',
+    },
+    loadingContainer: {
+    alignItems: 'center',
+    marginTop: 50,
+  },
+    loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#555',
+  },
+  resultsContainer: {
+  marginVertical: 10,
+},
   scrollContainer: {
     flex: 1,
     marginTop: 100,

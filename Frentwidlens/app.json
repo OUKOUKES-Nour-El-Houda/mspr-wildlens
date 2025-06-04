@@ -8,6 +8,9 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
+    "experimental": {
+      "newArchEnabled": true
+    },
     "permissions": [
       "camera",
       "mediaLibrary"

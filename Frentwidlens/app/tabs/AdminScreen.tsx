@@ -1,10 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 
 export default function AdminScreen() {
   const navigation = useNavigation();
+  const [location, setLocation] = useState(null);
   const [menuVisible, setMenuVisible] = useState(false);
   const scrollViewRef = useRef(null);
 
@@ -20,12 +22,49 @@ export default function AdminScreen() {
     Alert.alert('Feedback', 'Fonctionnalité à venir');
   };
 
+  // Demander la permission pour accéder à la position
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission refusée', 'Autorisation de localisation nécessaire.');
+        return;
+      }
+
+      let loc = await Location.getCurrentPositionAsync({});
+      setLocation(loc);
+    })();
+  }, []);
+
+  // Fonction pour obtenir la localisation
+  const getLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission refusée', 'Activez la localisation pour utiliser cette fonction.');
+        return null;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({});
+      return currentLocation;
+    } catch (error) {
+      console.error('Erreur localisation:', error);
+      Alert.alert('Erreur', 'Impossible d\'obtenir la localisation.');
+      return null;
+    }
+  };
+
+  // Scanner avec la caméra
   const handleScanFootprint = async () => {
     try {
+      // Vérifier la localisation
+      const currentLocation = await getLocation();
+      if (!currentLocation) return;
+
       // Demander la permission pour la caméra
       const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
       if (!permissionResult.granted) {
-        Alert.alert('Erreur', 'Permission d’accès à la caméra requise !');
+        Alert.alert('Erreur', 'Permission d\'accès à la caméra requise !');
         return;
       }
 
@@ -34,15 +73,84 @@ export default function AdminScreen() {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
         allowsEditing: false,
+        base64: true, // Important pour l'upload
       });
 
       // Vérifier si l'utilisateur n'a pas annulé
-      if (!result.canceled) {
-        navigation.navigate('ResultScreen', { imageUri: result.assets[0].uri });
+      if (!result.canceled && result.assets && result.assets[0]) {
+        // Message de succès
+        Alert.alert('Succès', 'Image capturée avec succès !', [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Naviguer vers ResultScreen avec toutes les données
+              navigation.navigate('ResultScreen', {
+                imageUri: result.assets[0].uri,
+                base64: result.assets[0].base64,
+                location: currentLocation,
+                source: 'camera'
+              });
+            }
+          }
+        ]);
       }
     } catch (error) {
       console.error('Erreur lors de l\'ouverture de la caméra :', error);
       Alert.alert('Erreur', `Impossible d\'ouvrir la caméra : ${error.message}`);
+    }
+  };
+
+  // Upload depuis la galerie
+  const handlePickImage = async () => {
+    try {
+      // Vérifier la localisation
+      const currentLocation = await getLocation();
+      if (!currentLocation) return;
+
+      // Demander la permission pour la galerie
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permissionResult.granted) {
+        Alert.alert('Erreur', 'Permission d\'accès à la galerie requise !');
+        return;
+      }
+
+      // Ouvrir la galerie
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        allowsEditing: false,
+        base64: true, // Important pour l'upload
+      });
+
+      if (result.canceled || !result.assets || !result.assets[0]) {
+        return; // L'utilisateur a annulé
+      }
+
+      // Vérifier si base64 est disponible
+      if (!result.assets[0].base64) {
+        Alert.alert('Erreur', 'Impossible de traiter l\'image sélectionnée.');
+        return;
+      }
+
+      // Message de succès
+      Alert.alert('Succès', 'Image chargée avec succès !', [
+        {
+          text: 'OK',
+          onPress: () => {
+            // Naviguer vers ResultScreen avec toutes les données
+            navigation.navigate('ResultScreen', {
+              imageUri: result.assets[0].uri,
+              base64: result.assets[0].base64,
+              location: currentLocation,
+              source: 'gallery'
+            });
+          }
+        }
+      ]);
+
+    } catch (error) {
+      console.error('Erreur lors de la sélection d\'image:', error);
+      Alert.alert('Erreur', 'Une erreur est survenue lors du traitement.');
     }
   };
 
@@ -64,26 +172,6 @@ export default function AdminScreen() {
     setMenuVisible(!menuVisible);
   };
 
-  const handlePickImage = async () => {
-    try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        Alert.alert('Erreur', 'Permission d’accès à la galerie requise !');
-        return;
-      }
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
-      });
-      if (!result.canceled) {
-        navigation.navigate('ResultScreen', { imageUri: result.assets[0].uri });
-      }
-    } catch (error) {
-      console.error('Erreur lors de l\'accès à la galerie :', error);
-      Alert.alert('Erreur', 'Impossible d\'accéder à la galerie.');
-    }
-  };
-
   const scrollToTop = () => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTo({ y: 0, animated: true });
@@ -95,7 +183,6 @@ export default function AdminScreen() {
       scrollViewRef.current.scrollToEnd({ animated: true });
     }
   };
-
   return (
     <View style={styles.container}>
       {/* En-tête fixe avec menu */}
@@ -152,7 +239,7 @@ export default function AdminScreen() {
         <View style={styles.scanSection}>
           <Text style={styles.sectionTitle}>DÉMARREZ VOTRE ANALYSE</Text>
           <Image
-            source={{ uri: 'https://images.unsplash.com/photo-1605723517503-3cadb131dd8e' }}
+            source={require('../../assets/images/icono-de-camara-verte.png')}
             style={styles.scanImage}
           />
           <Text style={styles.sectionText}>
